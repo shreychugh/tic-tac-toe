@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Tic Tac Toe</title>
+    <title>Paw Patrol Tic Tac Toe</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,12 +33,15 @@
         .cell {
             width: 80px;
             height: 80px;
-            font-size: 40px;
+            font-size: 24px;
             font-weight: bold;
             border: 2px solid #333;
             background: white;
             cursor: pointer;
             transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .cell:hover {
@@ -70,14 +73,6 @@
             border-radius: 4px;
         }
         
-        .X {
-            color: #2196F3;
-        }
-        
-        .O {
-            color: #f44336;
-        }
-        
         #status {
             font-size: 20px;
             margin: 10px;
@@ -89,11 +84,41 @@
             font-size: 14px;
             color: #666;
         }
+
+        .character-select {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px;
+        }
+
+        .character-option {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .character-option:hover {
+            border-color: #4CAF50;
+            background: #f0f0f0;
+        }
+
+        .character-option.selected {
+            border-color: #4CAF50;
+            background: #e8f5e9;
+        }
+
+        .character-name {
+            font-size: 14px;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <h1>Tic Tac Toe</h1>
+        <h1>Paw Patrol Tic Tac Toe</h1>
         
         <div id="mode-selection">
             <button onclick="setGameMode('1player')">1 Player (vs Computer)</button>
@@ -101,12 +126,34 @@
         </div>
         
         <div id="player-input" style="display: none;">
-            <h2>Enter Player Names</h2>
+            <h2>Enter Player Names & Choose Characters</h2>
             <div>
                 <input type="text" id="player1" placeholder="Player 1 Name">
+                <div class="character-select" id="player1-chars">
+                    <div class="character-option" onclick="selectCharacter(1, '🐾 Chase')">
+                        🐾 Chase
+                    </div>
+                    <div class="character-option" onclick="selectCharacter(1, '🐾 Marshall')">
+                        🐾 Marshall
+                    </div>
+                    <div class="character-option" onclick="selectCharacter(1, '🐾 Skye')">
+                        🐾 Skye
+                    </div>
+                </div>
             </div>
             <div id="player2-container" style="display: none;">
                 <input type="text" id="player2" placeholder="Player 2 Name">
+                <div class="character-select" id="player2-chars">
+                    <div class="character-option" onclick="selectCharacter(2, '🐾 Rubble')">
+                        🐾 Rubble
+                    </div>
+                    <div class="character-option" onclick="selectCharacter(2, '🐾 Rocky')">
+                        🐾 Rocky
+                    </div>
+                    <div class="character-option" onclick="selectCharacter(2, '🐾 Zuma')">
+                        🐾 Zuma
+                    </div>
+                </div>
             </div>
             <button onclick="startGame()">Start Game</button>
         </div>
@@ -122,11 +169,40 @@
 
     <script>
         let gameMode = null;
-        let currentPlayer = 'X';
+        let currentPlayer = 1;
         let board = Array(9).fill('');
         let player1Name = '';
         let player2Name = '';
+        let player1Char = '';
+        let player2Char = '';
         let gameActive = true;
+
+        function selectCharacter(player, character) {
+            if (player === 1) {
+                player1Char = character;
+                document.querySelectorAll('#player1-chars .character-option').forEach(opt => 
+                    opt.classList.remove('selected'));
+                document.querySelector(`#player1-chars .character-option:contains('${character}')`).classList.add('selected');
+            } else {
+                player2Char = character;
+                document.querySelectorAll('#player2-chars .character-option').forEach(opt => 
+                    opt.classList.remove('selected'));
+                document.querySelector(`#player2-chars .character-option:contains('${character}')`).classList.add('selected');
+            }
+        }
+
+        // Helper function for querySelector
+        Element.prototype.matches = Element.prototype.matches || Element.prototype.msMatchesSelector;
+        Element.prototype.closest = Element.prototype.closest || function (selector) {
+            var el = this;
+            while (el) {
+                if (el.matches(selector)) {
+                    return el;
+                }
+                el = el.parentElement;
+            }
+            return null;
+        };
 
         function setGameMode(mode) {
             gameMode = mode;
@@ -134,14 +210,17 @@
             document.getElementById('player-input').style.display = 'block';
             document.getElementById('player2-container').style.display = 
                 mode === '2player' ? 'block' : 'none';
+            if (mode === '1player') {
+                player2Char = '🐾 Robo-Pup';
+            }
         }
 
         function startGame() {
             player1Name = document.getElementById('player1').value.trim();
-            player2Name = document.getElementById('player2').value.trim();
+            player2Name = gameMode === '2player' ? document.getElementById('player2').value.trim() : 'Computer';
             
-            if (!player1Name || (gameMode === '2player' && !player2Name)) {
-                alert('Please enter player names');
+            if (!player1Name || !player1Char || (gameMode === '2player' && (!player2Name || !player2Char))) {
+                alert('Please enter names and select characters for all players');
                 return;
             }
 
@@ -166,7 +245,7 @@
 
         function handleClick(index) {
             if (!gameActive || board[index] !== '' || 
-                (gameMode === '1player' && currentPlayer === 'O')) return;
+                (gameMode === '1player' && currentPlayer === 2)) return;
 
             makeMove(index);
             
@@ -176,9 +255,8 @@
         }
 
         function makeMove(index) {
-            board[index] = currentPlayer;
-            document.getElementsByClassName('cell')[index].textContent = currentPlayer;
-            document.getElementsByClassName('cell')[index].classList.add(currentPlayer);
+            board[index] = currentPlayer === 1 ? player1Char : player2Char;
+            document.getElementsByClassName('cell')[index].textContent = board[index];
             
             if (checkWinner()) {
                 gameActive = false;
@@ -192,7 +270,7 @@
                 return;
             }
             
-            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+            currentPlayer = currentPlayer === 1 ? 2 : 1;
             updateStatus();
         }
 
@@ -224,29 +302,33 @@
         function updateStatus() {
             const statusDiv = document.getElementById('status');
             if (!gameActive && checkWinner()) {
-                const winner = currentPlayer === 'X' ? player1Name : 
-                    (gameMode === '1player' ? 'Computer' : player2Name);
-                statusDiv.textContent = `Winner: ${winner}`;
+                const winner = currentPlayer === 1 ? player1Name : player2Name;
+                const winnerChar = currentPlayer === 1 ? player1Char : player2Char;
+                statusDiv.textContent = `Winner: ${winner} (${winnerChar})`;
             } else if (!gameActive) {
                 statusDiv.textContent = "Game Draw!";
             } else {
-                const currentPlayerName = currentPlayer === 'X' ? player1Name : 
-                    (gameMode === '1player' ? 'Computer' : player2Name);
-                statusDiv.textContent = `Next player: ${currentPlayerName}`;
+                const currentPlayerName = currentPlayer === 1 ? player1Name : player2Name;
+                const currentChar = currentPlayer === 1 ? player1Char : player2Char;
+                statusDiv.textContent = `Next player: ${currentPlayerName} (${currentChar})`;
             }
         }
 
         function resetGame() {
             gameActive = true;
-            currentPlayer = 'X';
+            currentPlayer = 1;
             gameMode = null;
             player1Name = '';
             player2Name = '';
+            player1Char = '';
+            player2Char = '';
             document.getElementById('game').style.display = 'none';
             document.getElementById('mode-selection').style.display = 'block';
             document.getElementById('player1').value = '';
             document.getElementById('player2').value = '';
+            document.querySelectorAll('.character-option').forEach(opt => 
+                opt.classList.remove('selected'));
         }
     </script>
 </body>
-</html>  
+</html>
