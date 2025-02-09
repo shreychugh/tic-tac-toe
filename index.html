@@ -4,167 +4,234 @@
     <title>Paw Patrol Tic Tac Toe</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #f0f0f0;
-            margin: 20px;
+            background: linear-gradient(135deg, #87CEEB 0%, #1E90FF 100%);
+            margin: 0;
+            min-height: 100vh;
+            padding: 20px;
         }
         
         #game-container {
             text-align: center;
-            background: white;
+            background: rgba(255, 255, 255, 0.95);
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            max-width: 500px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            max-width: 600px;
             width: 100%;
+            margin: 20px;
+        }
+        
+        h1 {
+            color: #FF4081;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            font-size: 2.5em;
+            margin-bottom: 20px;
         }
         
         #board {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 15px;
             margin: 20px auto;
-            max-width: 300px;
+            max-width: 400px;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 15px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
         }
         
         .cell {
-            width: 80px;
-            height: 80px;
-            font-size: 24px;
-            font-weight: bold;
-            border: 2px solid #333;
+            width: 100px;
+            height: 100px;
+            font-size: 40px;
+            border: none;
             background: white;
+            border-radius: 15px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
         .cell:hover {
-            background: #f5f5f5;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            background: #f0f0f0;
         }
         
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
+        button:not(.cell) {
+            padding: 12px 24px;
+            font-size: 18px;
             margin: 10px;
             cursor: pointer;
-            background-color: #4CAF50;
+            background: linear-gradient(45deg, #FF4081 30%, #FF6B9B 90%);
             color: white;
             border: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+            border-radius: 25px;
+            transition: all 0.3s;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            box-shadow: 0 4px 15px rgba(255,64,129,0.3);
         }
         
-        button:hover {
-            background-color: #45a049;
+        button:not(.cell):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255,64,129,0.4);
         }
         
         input {
-            padding: 8px;
-            margin: 5px;
+            padding: 12px;
+            margin: 10px;
             font-size: 16px;
-            width: 200px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            width: 250px;
+            border: 2px solid #FF4081;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        input:focus {
+            border-color: #FF6B9B;
+            box-shadow: 0 0 10px rgba(255,64,129,0.2);
         }
         
         #status {
-            font-size: 20px;
-            margin: 10px;
+            font-size: 24px;
+            margin: 20px;
+            color: #FF4081;
             font-weight: bold;
-        }
-        
-        .copyright {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
+            padding: 10px;
+            border-radius: 15px;
+            background: rgba(255,64,129,0.1);
         }
 
         .character-select {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px;
+            gap: 15px;
+            margin: 20px;
         }
 
         .character-option {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
+            padding: 15px;
+            border: 3px solid #ddd;
+            border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
-        .character-option:hover {
-            border-color: #4CAF50;
-            background: #f0f0f0;
+        .character-option:hover:not(.disabled) {
+            transform: translateY(-3px);
+            border-color: #FF4081;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
 
         .character-option.selected {
-            border-color: #4CAF50;
-            background: #e8f5e9;
+            border-color: #FF4081;
+            background: rgba(255,64,129,0.1);
+            transform: translateY(-3px);
+        }
+
+        .character-option.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f0f0f0;
+        }
+
+        .character-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
         }
 
         .character-name {
+            font-size: 16px;
+            color: #444;
+            font-weight: bold;
+        }
+
+        .copyright {
+            margin-top: 20px;
             font-size: 14px;
-            margin-top: 5px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .winner-animation {
+            animation: bounce 0.5s ease infinite;
         }
     </style>
 </head>
 <body>
     <div id="game-container">
-        <h1>Paw Patrol Tic Tac Toe</h1>
+        <h1>🐾 Paw Patrol Tic Tac Toe 🐾</h1>
         
         <div id="mode-selection">
-            <button onclick="setGameMode('1player')">1 Player (vs Computer)</button>
-            <button onclick="setGameMode('2player')">2 Players</button>
+            <button onclick="setGameMode('1player')">Play vs Computer 🤖</button>
+            <button onclick="setGameMode('2player')">Play with Friend 👥</button>
         </div>
         
         <div id="player-input" style="display: none;">
-            <h2>Enter Player Names & Choose Characters</h2>
+            <h2>Choose Your Pup!</h2>
             <div>
-                <input type="text" id="player1" placeholder="Player 1 Name">
+                <input type="text" id="player1" placeholder="Enter Player 1 Name">
                 <div class="character-select" id="player1-chars">
-                    <div class="character-option" onclick="selectCharacter(1, '🐾 Chase')">
-                        🐾 Chase
+                    <div class="character-option" onclick="selectCharacter(1, 'Chase')">
+                        <div class="character-icon">🐺</div>
+                        <div class="character-name">Chase</div>
                     </div>
-                    <div class="character-option" onclick="selectCharacter(1, '🐾 Marshall')">
-                        🐾 Marshall
+                    <div class="character-option" onclick="selectCharacter(1, 'Marshall')">
+                        <div class="character-icon">🐕</div>
+                        <div class="character-name">Marshall</div>
                     </div>
-                    <div class="character-option" onclick="selectCharacter(1, '🐾 Skye')">
-                        🐾 Skye
+                    <div class="character-option" onclick="selectCharacter(1, 'Skye')">
+                        <div class="character-icon">🦮</div>
+                        <div class="character-name">Skye</div>
                     </div>
                 </div>
             </div>
             <div id="player2-container" style="display: none;">
-                <input type="text" id="player2" placeholder="Player 2 Name">
+                <input type="text" id="player2" placeholder="Enter Player 2 Name">
                 <div class="character-select" id="player2-chars">
-                    <div class="character-option" onclick="selectCharacter(2, '🐾 Rubble')">
-                        🐾 Rubble
+                    <div class="character-option" onclick="selectCharacter(2, 'Rubble')">
+                        <div class="character-icon">🐕‍🦺</div>
+                        <div class="character-name">Rubble</div>
                     </div>
-                    <div class="character-option" onclick="selectCharacter(2, '🐾 Rocky')">
-                        🐾 Rocky
+                    <div class="character-option" onclick="selectCharacter(2, 'Rocky')">
+                        <div class="character-icon">🐩</div>
+                        <div class="character-name">Rocky</div>
                     </div>
-                    <div class="character-option" onclick="selectCharacter(2, '🐾 Zuma')">
-                        🐾 Zuma
+                    <div class="character-option" onclick="selectCharacter(2, 'Zuma')">
+                        <div class="character-icon">🐶</div>
+                        <div class="character-name">Zuma</div>
                     </div>
                 </div>
             </div>
-            <button onclick="startGame()">Start Game</button>
+            <button onclick="startGame()">Start Adventure! 🎮</button>
         </div>
         
         <div id="game" style="display: none;">
             <div id="status"></div>
             <div id="board"></div>
-            <button onclick="resetGame()">Reset Game</button>
+            <button onclick="resetGame()">New Game! 🔄</button>
         </div>
         
-        <div class="copyright">© 2025 SHREY™</div>
+        <div class="copyright">© 2025 SHREY™ - Adventure Bay Edition</div>
     </div>
 
     <script>
@@ -176,25 +243,70 @@
         let player1Char = '';
         let player2Char = '';
         let gameActive = true;
+        let selectedCharacters = new Set();
 
         function selectCharacter(player, character) {
+            // If character is already selected by the other player, don't allow selection
+            if (
+                (player === 1 && player2Char === character) ||
+                (player === 2 && player1Char === character)
+            ) {
+                return;
+            }
+
+            const characterIcon = getCharacterIcon(character);
+            
             if (player === 1) {
+                if (player1Char) {
+                    selectedCharacters.delete(player1Char);
+                }
                 player1Char = character;
                 document.querySelectorAll('#player1-chars .character-option').forEach(opt => 
                     opt.classList.remove('selected'));
                 document.querySelector(`#player1-chars .character-option:contains('${character}')`).classList.add('selected');
             } else {
+                if (player2Char) {
+                    selectedCharacters.delete(player2Char);
+                }
                 player2Char = character;
                 document.querySelectorAll('#player2-chars .character-option').forEach(opt => 
                     opt.classList.remove('selected'));
                 document.querySelector(`#player2-chars .character-option:contains('${character}')`).classList.add('selected');
             }
+
+            selectedCharacters.add(character);
+            updateCharacterAvailability();
         }
 
-        // Helper function for querySelector
+        function updateCharacterAvailability() {
+            document.querySelectorAll('.character-option').forEach(option => {
+                const characterName = option.querySelector('.character-name').textContent;
+                if (selectedCharacters.has(characterName)) {
+                    if (!option.classList.contains('selected')) {
+                        option.classList.add('disabled');
+                    }
+                } else {
+                    option.classList.remove('disabled');
+                }
+            });
+        }
+
+        function getCharacterIcon(character) {
+            const icons = {
+                'Chase': '🐺',
+                'Marshall': '🐕',
+                'Skye': '🦮',
+                'Rubble': '🐕‍🦺',
+                'Rocky': '🐩',
+                'Zuma': '🐶',
+                'Robo-Pup': '🤖'
+            };
+            return icons[character] || '🐾';
+        }
+
         Element.prototype.matches = Element.prototype.matches || Element.prototype.msMatchesSelector;
         Element.prototype.closest = Element.prototype.closest || function (selector) {
-            var el = this;
+            let el = this;
             while (el) {
                 if (el.matches(selector)) {
                     return el;
@@ -211,16 +323,17 @@
             document.getElementById('player2-container').style.display = 
                 mode === '2player' ? 'block' : 'none';
             if (mode === '1player') {
-                player2Char = '🐾 Robo-Pup';
+                player2Char = 'Robo-Pup';
             }
         }
 
         function startGame() {
-            player1Name = document.getElementById('player1').value.trim();
-            player2Name = gameMode === '2player' ? document.getElementById('player2').value.trim() : 'Computer';
+            player1Name = document.getElementById('player1').value.trim() || 'Player 1';
+            player2Name = gameMode === '2player' ? 
+                (document.getElementById('player2').value.trim() || 'Player 2') : 'Computer';
             
-            if (!player1Name || !player1Char || (gameMode === '2player' && (!player2Name || !player2Char))) {
-                alert('Please enter names and select characters for all players');
+            if (!player1Char || (gameMode === '2player' && !player2Char)) {
+                alert('Please select characters for all players!');
                 return;
             }
 
@@ -250,16 +363,19 @@
             makeMove(index);
             
             if (gameMode === '1player' && gameActive) {
-                setTimeout(computerMove, 500);
+                setTimeout(computerMove, 700);
             }
         }
 
         function makeMove(index) {
-            board[index] = currentPlayer === 1 ? player1Char : player2Char;
-            document.getElementsByClassName('cell')[index].textContent = board[index];
+            const currentChar = currentPlayer === 1 ? player1Char : player2Char;
+            board[index] = currentChar;
+            const cell = document.getElementsByClassName('cell')[index];
+            cell.textContent = getCharacterIcon(currentChar);
             
             if (checkWinner()) {
                 gameActive = false;
+                highlightWinningCells();
                 updateStatus();
                 return;
             }
@@ -286,49 +402,4 @@
 
         function checkWinner() {
             const winPatterns = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8],
-                [0, 3, 6], [1, 4, 7], [2, 5, 8],
-                [0, 4, 8], [2, 4, 6]
-            ];
-
-            return winPatterns.some(pattern => {
-                const [a, b, c] = pattern;
-                return board[a] !== '' && 
-                       board[a] === board[b] && 
-                       board[b] === board[c];
-            });
-        }
-
-        function updateStatus() {
-            const statusDiv = document.getElementById('status');
-            if (!gameActive && checkWinner()) {
-                const winner = currentPlayer === 1 ? player1Name : player2Name;
-                const winnerChar = currentPlayer === 1 ? player1Char : player2Char;
-                statusDiv.textContent = `Winner: ${winner} (${winnerChar})`;
-            } else if (!gameActive) {
-                statusDiv.textContent = "Game Draw!";
-            } else {
-                const currentPlayerName = currentPlayer === 1 ? player1Name : player2Name;
-                const currentChar = currentPlayer === 1 ? player1Char : player2Char;
-                statusDiv.textContent = `Next player: ${currentPlayerName} (${currentChar})`;
-            }
-        }
-
-        function resetGame() {
-            gameActive = true;
-            currentPlayer = 1;
-            gameMode = null;
-            player1Name = '';
-            player2Name = '';
-            player1Char = '';
-            player2Char = '';
-            document.getElementById('game').style.display = 'none';
-            document.getElementById('mode-selection').style.display = 'block';
-            document.getElementById('player1').value = '';
-            document.getElementById('player2').value = '';
-            document.querySelectorAll('.character-option').forEach(opt => 
-                opt.classList.remove('selected'));
-        }
-    </script>
-</body>
-</html>
+                [0, 1, 2], [3, 4, 5], [6, 7, 8
